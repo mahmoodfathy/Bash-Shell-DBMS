@@ -8,9 +8,9 @@ options=("Press 1 to create database" "press 2 to list databases" "press 3 to co
 select choice in "${options[@]}"
 do
 	case $REPLY in
-		1) echo ". ./create.sh";;
+		1) . ./createdb.sh;;
 		2) . ./listdbs.sh;;
-		3) echo ". ./connect.sh";;
+		3) . ./connect.sh;;
 		4) . ./dropdb.sh;;
 		5) echo "Bye"
 			exit;;
