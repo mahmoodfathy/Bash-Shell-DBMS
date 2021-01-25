@@ -4,9 +4,6 @@ exitflag=0
 
 while [ $exitflag -eq 0 ];do
 
-echo -n "Please enter a table name: "
-read tableName
-
 if [ -z $tableName ];then
 	echo -n "Please enter a table name: "
 	read tableName
@@ -39,7 +36,7 @@ while [ $exitflag -eq 0 ];do
 	if [ -z $fieldNum ];then
 		echo -n "Please enter a valid primary key: "
 		read pk
-		fieldNum=`awk -F',' -v pk="$pk" '{if(NR==pk) print NF}' dbs/$connectDbName/$tableName`
+		fieldNum=`awk -F',' -v pk="$pk" '{if($1==pk) print NF}' dbs/$connectDbName/$tableName`
 	else
 		exitflag=1
 	fi
@@ -48,14 +45,15 @@ done
 rowNum=`awk -F',' -v fn="$pk" '{if($1==fn) print NR}' dbs/$connectDbName/$tableName`
 
 if [ $rowNum -gt 0 ];then
-	
-	echo -n "Please Enter the field number you wish to update: "
-	read fieldNumber
-	exist=`awk -F',' -v rn="$rowNum" -v fn="$fieldNumber" '{if(NR==rn&&NF=fn) print}' dbs/$connectDbName/$tableName`
-	while [ -z "$exist" ];do
+
+	exitflag=0
+	while [ $exitflag -eq 0 ];do
 		echo -n "Please Enter a valid field number: "
 		read fieldNumber
-		exist=`awk -F',' -v rn="$rowNum" -v fn="$fieldNumber" '{if(NR==rn&&NF=fn) print}' dbs/$connectDbName/$tableName`
+		fieldCount=`awk -F',' -v rn="$rowNum" '{if(NR==rn) print NF}' dbs/$connectDbName/$tableName`
+		if [ $fieldNumber -lt $fieldCount ];then
+			break
+		fi
 	done
 
 	typeField=$[ $fieldNumber+1 ]

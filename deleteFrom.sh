@@ -2,10 +2,8 @@
 
 exitflag=0
 
+tableName=""
 while [ $exitflag -eq 0 ];do
-
-echo -n "Please enter a table name: "
-read tableName
 
 if [ -z $tableName ];then
 	echo -n "Please enter a table name: "
@@ -48,7 +46,7 @@ done
 rowNum=`awk -F',' -v fn="$pk" '{if($1==fn) print NR}' dbs/$connectDbName/$tableName`
 
 echo $rowNum
-awk -F',' -v rn="$rowNum" '{if(NR!=4) print}' dbs/$connectDbName/$tableName > dbs/$connectDbName/transitionFile
+awk -F',' -v rn="$rowNum" '{if(NR!=rn) print}' dbs/$connectDbName/$tableName > dbs/$connectDbName/transitionFile
 cat dbs/$connectDbName/transitionFile > dbs/$connectDbName/$tableName
 rm dbs/$connectDbName/transitionFile
 echo "Row deleted Successfully"
