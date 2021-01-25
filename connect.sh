@@ -24,4 +24,4 @@ else
 fi
 done
 
-. ./updateTable.sh
+. ./deleteFrom.sh
