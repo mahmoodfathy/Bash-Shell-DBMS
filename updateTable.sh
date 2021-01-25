@@ -28,4 +28,19 @@ echo "Please Enter row's primary key that you want to update"
 echo -n "Primary Key: "
 read pk
 
-echo $pk
+fieldNum=`cat dbs/$connectDbName/$tableName | grep $pk | awk -F, '{print NF}'`
+
+while [ $fieldNum -gt 0 ];do
+if [ $fieldNum -eq 1 ];then
+break
+fi
+
+echo -n "Please Enter new value for field number $fieldNum: "
+read value
+awk -F',' -v col="${fieldNum}" -v id="${pk}" -v val=$value '{if($1==id){$col=val}{print $0}}' FS=, OFS=, dbs/$connectDbName/$tableName > dbs/$connectDbName/transitionFile
+cat dbs/$connectDbName/transitionFile > dbs/$connectDbName/$tableName
+fieldNum=$[$fieldNum-1]
+done
+
+rm dbs/$connectDbName/transitionFile
+echo "Row updated successfully"

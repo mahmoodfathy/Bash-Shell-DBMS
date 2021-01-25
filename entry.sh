@@ -13,7 +13,8 @@ do
 	case $REPLY in
 		1) . ./createdb.sh;;
 		2) . ./listdbs.sh;;
-		3) . ./connect.sh;;
+		3) . ./connect.sh
+		   printMainMenu;;
 		4) . ./dropdb.sh;;
 		5) echo "Bye"
 			exit;;
