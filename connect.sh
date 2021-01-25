@@ -1,31 +1,27 @@
 #!/usr/bin/bash
-PS3="Please select a database operation: "
 
-function printMainMenu(){
-	clear
-	PS3="please enter a choice: "
-	echo "Press 1 to create database"
-	echo "Press 2 to list databases"
-	echo "Press 3 to connect to database"
-	echo "Press 4 to drop database"
-	echo "Press 5 to exit"
-}
+echo "Please enter the name of the database you want to connect to"
+echo -n "Name: "
+read name
 
-dboptions=("Create table" "List tables" "Drop Table" "Insert into table" "Select from table" "Delete from table" "Update table" "Back to main menu")
+exitflag=0
 
-select ch in "${dboptions[@]}"
-do
-	case $REPLY in 
-		1) echo "create table";;
-		2) echo "List table";;
-		3) echo "Drop table";;
-		4) echo "insert";;
-		5) echo "select";;
-		6) echo "delete from";;
-		7) echo "update";;
-		8) 
-		   printMainMenu
-		   break;;
-		*) echo "Please enter a valid option";;
-	esac
+
+while [ $exitflag -eq 0 ];do
+
+if [ -z $name ];then
+	echo -n "Please enter a name: "
+	read name
+	continue
+fi
+if [ -d dbs/$name ];then
+	connectDbName=$name
+	exitflag=1
+else
+	echo "No such Database found"
+	echo -n "Enter another name: "
+	read name
+fi
 done
+
+. ./updateTable.sh

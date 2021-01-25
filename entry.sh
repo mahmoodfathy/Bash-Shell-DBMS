@@ -1,8 +1,11 @@
 #!/usr/bin/bash
 
 ###Entry point for DBMS
+
 clear
+. ./helpers.sh
 PS3="Please enter a choice: "
+connectDbName=""
 
 options=("Press 1 to create database" "press 2 to list databases" "press 3 to connect to database" "press 4 to drop database" "press 5 to exit")
 select choice in "${options[@]}"
