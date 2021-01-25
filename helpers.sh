@@ -6,3 +6,23 @@ function printMainMenu(){
 	echo "Press 4 to drop database"
 	echo "Press 5 to exit"
 }
+
+function checkDataType(){
+	case "$1" in
+		"int") 
+			if [[ "$2" =~ ^-?[0-9]+$ ]];then
+				echo "true"
+			else 
+			echo "false"
+			fi
+			;;
+		"str")	
+			if [[ "$2" =~ [:alnum:] ]];then
+				echo "true"
+			else
+			echo "false" 
+			fi;;
+		*)  echo "false"
+			;;	
+	esac
+}
