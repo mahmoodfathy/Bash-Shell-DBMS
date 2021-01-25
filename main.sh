@@ -11,7 +11,8 @@ case $choice in
 ./ListTables.sh;;
 3)
  ./DropTable.sh;;
-4) echo "you want to insert into table";;
+4)
+./InsertTable.sh;;
 5) echo "you want to select from table";;
 6) echo "you want to delete from table";;
 7) echo "you want to update table";;
@@ -20,4 +21,6 @@ case $choice in
  kdialog --msgbox "Sorry, invalid selection"
 esac
 done
+if [ -f out ];then
 rm out
+fi
