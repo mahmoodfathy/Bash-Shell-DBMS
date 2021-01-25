@@ -24,4 +24,4 @@ else
 fi
 done
 
-. ./deleteFrom.sh
+. ./main.sh

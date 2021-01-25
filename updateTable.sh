@@ -32,8 +32,7 @@ echo "Please Enter row's primary key that you want to update"
 echo -n "Primary Key: "
 read pk
 
-fieldNum=`awk -F',' -v pk="$pk" '{if($1==pk) print NF}' dbs/$connectDbName/$tableName`
-
+fieldNum=`awk -F',' -v pk="$pk" '{if($1==pk) print NR}' dbs/$connectDbName/$tableName`
 exitflag=0
 
 while [ $exitflag -eq 0 ];do
@@ -46,30 +45,56 @@ while [ $exitflag -eq 0 ];do
 	fi
 done
 
-while [ $fieldNum -gt 0 ];do
-	if [ $fieldNum -eq 1 ];then
-	break
-	fi
+rowNum=`awk -F',' -v fn="$pk" '{if($1==fn) print NR}' dbs/$connectDbName/$tableName`
 
-	typeField=$[ $fieldNum+1 ]
-	type=`awk -F',' -v ty="$typeField" '{if(NR==ty) print $2}' dbs/$connectDbName/$tableName.types`
-	echo -n "Please Enter new value for field number $fieldNum: "
-	read value
-
-	correct=`checkDataType $type $value`
-	while [ $correct = "false" ];do
-
-	echo "Date type for field $fieldNum is $type"
-	echo -n "Please enter a valid data type: "
-	read value
-	correct=`checkDataType $type $value`
-
+if [ $rowNum -gt 0 ];then
+	
+	echo -n "Please Enter the field number you wish to update: "
+	read fieldNumber
+	exist=`awk -F',' -v rn="$rowNum" -v fn="$fieldNumber" '{if(NR==rn&&NF=fn) print}' dbs/$connectDbName/$tableName`
+	while [ -z "$exist" ];do
+		echo -n "Please Enter a valid field number: "
+		read fieldNumber
+		exist=`awk -F',' -v rn="$rowNum" -v fn="$fieldNumber" '{if(NR==rn&&NF=fn) print}' dbs/$connectDbName/$tableName`
 	done
 
-	awk -F',' -v col="${fieldNum}" -v id="${pk}" -v val=$value '{if($1==id){$col=val}{print $0}}' FS=, OFS=, dbs/$connectDbName/$tableName > dbs/$connectDbName/transitionFile
+	typeField=$[ $fieldNumber+1 ]
+	type=`awk -F',' -v ty="$typeField" '{if(NR==ty) print $2}' dbs/$connectDbName/$tableName.types`
+	echo -n "Please Enter the new value: "
+	read new
+
+	exitflag=0
+	if [ $fieldNumber -eq 1 ];then
+
+		idExist=`awk -F',' -v id="$new" '{if($1==id) print}' dbs/$connectDbName/$tableName`
+		while [ $exitflag -eq 0 ];do
+			if [ -z $idExist ];then
+				exitflag=1
+				
+			else
+				echo -n "Please Enter a unique primary key: "
+				read new
+				idExist=`awk -F',' -v id="$new" '{if($1==id) print}' dbs/$connectDbName/$tableName`
+			fi
+		done
+
+		awk -F',' -v col="${fieldNumber}" -v id="${pk}" -v val=$new '{if($1==id){$col=val}{print $0}}' FS=, OFS=, dbs/$connectDbName/$tableName > dbs/$connectDbName/transitionFile
+		cat dbs/$connectDbName/transitionFile > dbs/$connectDbName/$tableName
+
+		else
+			correct=`checkDataType $type $new`
+
+			while [ $correct = "false" ];do
+				echo "Date type for field $fieldNumber is $type"
+				echo -n "Please enter a valid data type: "
+				read new
+				correct=`checkDataType $type $new`
+			done
+	fi
+
+	awk -F',' -v col="${fieldNumber}" -v id="${pk}" -v val=$new '{if($1==id){$col=val}{print $0}}' FS=, OFS=, dbs/$connectDbName/$tableName > dbs/$connectDbName/transitionFile
 	cat dbs/$connectDbName/transitionFile > dbs/$connectDbName/$tableName
-	fieldNum=$[$fieldNum-1]
-done
+fi
 
 rm dbs/$connectDbName/transitionFile
 echo "Row updated successfully"
