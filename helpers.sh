@@ -17,10 +17,10 @@ function checkDataType(){
 			fi
 			;;
 		"str")	
-			if [[ "$2" =~ [:alnum:] ]];then
-				echo "true"
+			if [[ "$2" =~ [^a-zA-Z0-9] ]];then
+				echo "false"
 			else
-			echo "false" 
+			echo "true" 
 			fi;;
 		*)  echo "false"
 			;;	
