@@ -18,19 +18,22 @@ function checkDataType(){
 			;;	
 	esac
 }
-number=$(wc -l  dbs/dep.type | awk '{print $1}')
+tableName=$(kdialog --title "Table Name" --inputbox "Please Enter Table Name")
+if [ -f dbs/"$connectDbName"/$tableName ];then
+
+number=$(wc -l  dbs/"$connectDbName"/"$tableName.type" | awk '{print $1}')
 number=$(( $number-1 ))
-#echo "$number"
+
 #awk -F, '{if (NR==3) print $2 }' dep.type get the third line and 2nd field
 output=""
 for ((i=0;i<"$number";i++));do
     #skip the first line
     lineNumber=$(( $i+2 ))
-    fieldName=$(awk -F, -v lineNumber="$lineNumber" '{if (NR==lineNumber) print $1 }' dbs/dep.type)
-    fieldType=$(awk -F, -v lineNumber="$lineNumber" '{if (NR==lineNumber) print $2 }' dbs/dep.type)
+    fieldName=$(awk -F, -v lineNumber="$lineNumber" '{if (NR==lineNumber) print $1 }' dbs/"$connectDbName"/"$tableName.type")
+    fieldType=$(awk -F, -v lineNumber="$lineNumber" '{if (NR==lineNumber) print $2 }' dbs/"$connectDbName"/"$tableName.type")
     fields=$(kdialog --title "Fields" --inputbox "Please Enter $fieldName ")
     type=`checkDataType $fieldType $fields `
-    pk=$(awk -F, '{if (NR==1) print $2 }' dbs/dep.type)
+    pk=$(awk -F, '{if (NR==1) print $2 }' dbs/"$connectDbName"/"$tableName.type")
     
     while [ $type = "false" ];do
                 echo "in while condition"
@@ -43,5 +46,8 @@ for ((i=0;i<"$number";i++));do
    output+="$fields,"
  
 done
- echo "$output" >> dbs/dep
- sed -i  's/,$/\ /'  dbs/dep
+ echo "$output" >> dbs/"$connectDbName"/"$tableName"
+ sed -i  's/,$/\ /'  dbs/"$connectDbName"/$tableName""
+ else
+ kdialog --sorry "Table Name doesnt  exist"
+ fi
