@@ -1,29 +1,8 @@
 #!/usr/bin/bash
 
-exitflag=0
+getTableName
 
-tableName=""
-while [ $exitflag -eq 0 ];do
-
-if [ -z $tableName ];then
-	echo -n "Please enter a table name: "
-	read tableName
-	continue
-fi
-if [ -f dbs/$connectDbName/$tableName ];then
-	exitflag=1
-else
-	echo "No such Table found"
-	echo -n "Enter another table name: "
-	read tableName
-fi
-done
-
-echo "####################################"
-for val in `cat dbs/$connectDbName/$tableName`;do
-    echo $val
-done
-echo "####################################"
+listTableContents
 
 echo "Please Enter row's primary key that you want to delete"
 echo -n "Primary Key: "
@@ -45,7 +24,6 @@ done
 
 rowNum=`awk -F',' -v fn="$pk" '{if($1==fn) print NR}' dbs/$connectDbName/$tableName`
 
-echo $rowNum
 awk -F',' -v rn="$rowNum" '{if(NR!=rn) print}' dbs/$connectDbName/$tableName > dbs/$connectDbName/transitionFile
 cat dbs/$connectDbName/transitionFile > dbs/$connectDbName/$tableName
 rm dbs/$connectDbName/transitionFile
