@@ -41,7 +41,7 @@ if [ $continueFlag -eq 0 ];then
     if grep -Fxq "$pk" keys
     then
         #if key is found
-        key=$(awk /$pk/ file) #gets the key
+        key=$(awk /$pk/ dbs/"$connectDbName"/"$tableName.type") #gets the key
         sed -i "1 i\\$key" dbs/"$connectDbName"/"$tableName.type"
         line=$(awk -F',' -v pk="$pk" '{if($1==pk) print NR}' dbs/"$connectDbName"/"$tableName.type" | tail -1)
         sed -i "$line d" dbs/"$connectDbName"/"$tableName.type"  #deletes the line
