@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-
+typeset -i toNum
 getTableName
 
 listTableContents
@@ -30,7 +30,9 @@ if [ $rowNum -gt 0 ];then
 		echo -n "Please Enter a valid field number: "
 		read fieldNumber
 		fieldCount=`awk -F',' -v rn="$rowNum" '{if(NR==rn) print NF}' dbs/$connectDbName/$tableName`
-		if [ $fieldNumber -le $fieldCount ];then
+		num=0
+		num=$(($num+$fieldNumber))
+		if [ $num -le $fieldCount ] && [ $num -gt 0 ];then
 			break
 		fi
 	done
