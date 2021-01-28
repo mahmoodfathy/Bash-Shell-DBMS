@@ -7,6 +7,20 @@ exitflag=0
 
 while [ $exitflag -eq 0 ];do
 
+if [[ $name == *['!''?'@\#\$%^\&*()-+\.\/';']* ]]
+then
+	echo "! @ # $ % ^ () ? + ; . -  are not allowed!"
+	echo -n "Please enter a valid name: "
+	read name
+	continue
+fi
+
+if [[ $name = *" "* ]]; then
+	echo "spaces are not allowed!"
+	echo -n "Please enter a valid name: "
+	read name
+fi
+
 if [ -z $name ];then
 echo -n "Please enter a name: "
 read name
