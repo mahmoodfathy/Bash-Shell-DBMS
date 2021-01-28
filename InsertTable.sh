@@ -20,20 +20,35 @@ function checkDataType(){
 }
 echo "##############################"
 echo $connectDbName
+echo "##############################"
 tableName=$(kdialog --title "Table Name" --inputbox "Please Enter Table Name")
 if [ -f dbs/"$connectDbName"/$tableName ];then
 
 number=$(wc -l  dbs/"$connectDbName"/"$tableName.types" | awk '{print $1}')
 number=$(( $number-1 ))
 
-#awk -F, '{if (NR==3) print $2 }' dep.type get the third line and 2nd field
+
 output=""
 for ((i=0;i<"$number";i++));do
     #skip the first line
     lineNumber=$(( $i+2 ))
-    fieldName=$(awk -F, -v lineNumber="$lineNumber" '{if (NR==lineNumber) print $1 }' dbs/"$connectDbName"/"$tableName.type")
-    fieldType=$(awk -F, -v lineNumber="$lineNumber" '{if (NR==lineNumber) print $2 }' dbs/"$connectDbName"/"$tableName.type")
+    fieldName=$(awk -F, -v lineNumber="$lineNumber" '{if (NR==lineNumber) print $1 }' dbs/"$connectDbName"/"$tableName.types")
+    fieldType=$(awk -F, -v lineNumber="$lineNumber" '{if (NR==lineNumber) print $2 }' dbs/"$connectDbName"/"$tableName.types")
     fields=$(kdialog --title "Fields" --inputbox "Please Enter $fieldName ")
+	if [ $i -eq 0 ];then
+	exitflag=0
+	isUnique=`awk -F',' -v id="$fields" '{if($1==id) print}' dbs/$connectDbName/$tableName`
+		while [ $exitflag -eq 0 ];do
+			if [ -z $isUnique ];then
+				exitflag=1
+				
+			else
+				kdialog --sorry "Primary Key should be unique ,Enter another one please"
+				fields=$(kdialog --title "Fields" --inputbox "Please Enter $fieldName ")
+				isUnique=`awk -F',' -v id="$fields" '{if($1==id) print}' dbs/$connectDbName/$tableName`
+			fi
+		done
+	fi
     type=`checkDataType $fieldType $fields `
     pk=$(awk -F, '{if (NR==1) print $2 }' dbs/"$connectDbName"/"$tableName.types")
     

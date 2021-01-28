@@ -1,25 +1,128 @@
 #!/usr/bin/bash
 clear
-echo $connectDbName
-kdialog --title "Table Name" --inputbox "What is the name of your Table?" > out
+title=$(kdialog --title "Table Name" --inputbox "What is the name of your Table?") 
+if [ -z "$title" ];then #check if cancel was clicked
+        
+    
+        . ./main.sh #returning to main menu
+        break
+fi
+#checks if tablename conatians special cahracters
+if [[ $title == *['!''?'@\#\$%^\&*()-+\.\/';']* ]]
+then
+kdialog --sorry "! @ # $ % ^ () ? + ; . - are not allowed!"
+. ./main.sh 
+break
+
+fi
+#checks if tablename contains spaces
+if [ -z "$title" ];then #check if cancel was clicked
+        
+        . ./main.sh #returning to main menu
+        break
+fi
+if [[ $title = *" "* ]]; then
+kdialog --sorry "spaces are not allowed!"
+. ./main.sh 
+break
+fi 
+echo "$title" > out
+
+
 
 for choice in $(cat out) ;do
+echo "$choice"
 if [ -f dbs/"$connectDbName"/$choice ];then
 kdialog --sorry "Table Name Already exists"
+exit
     else
     touch dbs/"$connectDbName"/$choice
 fi
 
+
 done
 
 continueFlag=0 #checks if there are no errors in datatype
-input=$(kdialog --title "Number of Table Fields" --inputbox "Please Enter the number of fields")
+tableName=`cat out` 
+input=$(kdialog --title "Number of Table Fields" --inputbox "Please Enter the number of fields") 
+if [ -z "$input" ];then #check if cancel was clicked
+        
+        rm  dbs/"$connectDbName"/"$tableName" 
+        #exit
+         . ./main.sh
+         break
+fi
+            
+type=`checkDataType int $input ` #checks if no of fields is of type integer
+ while [ $type = "false" ];do
+                echo "in while condition"
+				input=$(kdialog --title "Number of Table Fields" --inputbox "Please Enter the number of fields")
+                if [ -z "$input" ];then #check if cancel was clicked
+                     
+                     rm  dbs/"$connectDbName"/"$tableName" 
+                    . ./main.sh
+                    break
+                fi
+				type=`checkDataType int $input`
+   
+                   
+                
+    done
+
+
 
  for ((i=0;i<"$input";i++)) ; do
     number=$(( $i+1 ))
     name=$(kdialog --title "Field Names" --inputbox "Please Enter the $number field name")
-    tableName=`cat out` 
+    isUnique=$(awk -F',' -v id="$name" '{if($1==id) print}' dbs/$connectDbName/"$tableName.types")
+    echo "$isUnique"
+    
+    if [ -z "$name" ];then #check if cancel was clicked 
+        
+        rm  dbs/"$connectDbName"/"$tableName" 
+        if [ -f dbs/"$connectDbName"/"$tableName.types"  ];then #if user canceled in second iteration the tablename.types should be removed
+            rm dbs/"$connectDbName"/"$tableName.types"
+        fi
+         . ./main.sh
+         break
+    fi
+    exitFlag=0
+    while [ $exitFlag -eq 0 ];do
+
+        if [ -z $isUnique ];then
+    
+            exitFlag=1
+            
+        else
+      
+            kdialog --sorry "Please Enter a unique Field Name"
+            name=$(kdialog --title "Field Names" --inputbox "Please Enter the $number field name")
+            if [ -z "$name" ];then #check if cancel was clicked
+               
+                rm  dbs/"$connectDbName"/"$tableName" 
+                if [ -f dbs/"$connectDbName"/"$tableName.types"  ];then #if user canceled in second iteration the tablename.types should be removed
+                    rm dbs/"$connectDbName"/"$tableName.types"
+                fi
+                exit #breaks from program if entering a unique field fails
+             
+            fi
+            isUnique=$(awk -F',' -v id="$name" '{if($1==id) print}' dbs/$connectDbName/"$tableName.types")
+        fi
+    done
+
+   
     type=$(kdialog --title "Field Types" --inputbox "Please Enter the $number field int or str")
+    
+      if [ -z "$type" ];then #check if cancel was clicked
+      
+        rm  dbs/"$connectDbName"/"$tableName" 
+         if [ -f dbs/"$connectDbName"/"$tableName.types"  ];then #if user canceled in second iteration the tablename.types should be removed
+            rm dbs/"$connectDbName"/"$tableName.types"
+        fi 
+        #exit
+         . ./main.sh
+         break
+    fi
     case "$type" in
     "str")  echo "$name,$type" >>dbs/"$connectDbName"/"$tableName.types";;
     "int") echo "$name,$type" >>dbs/"$connectDbName"/"$tableName.types";;

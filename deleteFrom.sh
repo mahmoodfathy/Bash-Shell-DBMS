@@ -16,7 +16,7 @@ while [ $exitflag -eq 0 ];do
 	if [ -z $fieldNum ];then
 		echo -n "Please enter a valid primary key: "
 		read pk
-		fieldNum=`awk -F',' -v pk="$pk" '{if(NR==pk) print NF}' dbs/$connectDbName/$tableName`
+		fieldNum=`awk -F',' -v pk="$pk" '{if($1==pk) print NF}' dbs/$connectDbName/$tableName`
 	else
 		exitflag=1
 	fi
