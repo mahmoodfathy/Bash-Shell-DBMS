@@ -1,4 +1,11 @@
 function printMainMenu(){
+	clear
+	echo "  ____            _       ____  ____  __  __ ____  
+ | __ )  __ _ ___| |__   |  _ \| __ )|  \/  / ___| 
+ |  _ \ / _  / __| '_ \  | | | |  _ \| |\/| \___ \ 
+ | |_) | (_| \__ \ | | | | |_| | |_) | |  | |___) |
+ |____/ \__,_|___/_| |_| |____/|____/|_|  |_|____/ "
+
 	PS3="please enter a choice: "
 	echo "Press 1 to create database"
 	echo "Press 2 to list databases"
