@@ -31,8 +31,8 @@ output=""
 for ((i=0;i<"$number";i++));do
     #skip the first line
     lineNumber=$(( $i+2 ))
-    fieldName=$(awk -F, -v lineNumber="$lineNumber" '{if (NR==lineNumber) print $1 }' dbs/"$connectDbName"/"$tableName.type")
-    fieldType=$(awk -F, -v lineNumber="$lineNumber" '{if (NR==lineNumber) print $2 }' dbs/"$connectDbName"/"$tableName.type")
+    fieldName=$(awk -F, -v lineNumber="$lineNumber" '{if (NR==lineNumber) print $1 }' dbs/"$connectDbName"/"$tableName.types")
+    fieldType=$(awk -F, -v lineNumber="$lineNumber" '{if (NR==lineNumber) print $2 }' dbs/"$connectDbName"/"$tableName.types")
     fields=$(kdialog --title "Fields" --inputbox "Please Enter $fieldName ")
     type=`checkDataType $fieldType $fields `
     pk=$(awk -F, '{if (NR==1) print $2 }' dbs/"$connectDbName"/"$tableName.types")
