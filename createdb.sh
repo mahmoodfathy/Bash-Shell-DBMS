@@ -19,6 +19,7 @@ if [[ $name = *" "* ]]; then
 	echo "spaces are not allowed!"
 	echo -n "Please enter a valid name: "
 	read name
+	continue
 fi
 
 if [ -z $name ];then
