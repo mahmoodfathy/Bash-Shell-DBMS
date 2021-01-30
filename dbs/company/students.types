@@ -1,4 +1,3 @@
 pk,id
 id,int
 name,str
-adress,str
